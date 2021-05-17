@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "commonjs",
+    "allowJs": false,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@routes/*": [
+        "src/routes/*"
+      ],
+      "@utils/*": [
+        "src/utilities/*"
+      ]
+    },
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "plugins": [
+      {
+        "transform": "@zerollup/ts-transform-paths"
+      }
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "ormconfig.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/public"
+  ]
+}
