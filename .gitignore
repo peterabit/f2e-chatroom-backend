@@ -4,6 +4,5 @@ dist/
 .vscode/
 
 .env
-.env.dev
 
 ormconfig.json
