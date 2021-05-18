@@ -6,8 +6,11 @@ import koaBody from 'koa-body'
 import logger from 'koa-logger'
 import { AppConfig } from 'src/app.config'
 import { router } from './app.routing'
+import { appErrorHandler } from './core/app-error-handler'
 
 const app = new Koa()
+
+app.use(appErrorHandler)
 
 app.use(logger())
 
