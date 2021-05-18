@@ -3,57 +3,73 @@ import { Namespace, Socket } from 'socket.io'
 import { ChatMessage } from 'src/entities/chat'
 import { ChatMessageModel } from 'src/models/chat-message.model'
 
-interface UserInfo {
+export interface UserInfo {
   name: string
   avatar: string
 }
 
-interface MessageDto {
+export interface MessageDto {
   content: string
 }
 
 const users = new Map<string, UserInfo>()
 
-export const chatController = (nIo: Namespace) => {
-  nIo.on('connection', (socket: Socket) => {
-    const chatMessageModel = new ChatMessageModel()
-    socket
-      .on(
-        'get_records',
-        async (callback: (res: { messages: MessageDto[] }) => void) => {
-          const recordMsgs = await chatMessageModel.getAll()
-          callback({ messages: recordMsgs })
-        }
-      )
-      .on('message', async (msg: MessageDto) => {
-        const msgInput = messageEntityTranform(socket.id, msg)
-        if (msgInput) {
-          const result = await chatMessageModel.insert(msgInput)
-          nIo.to('chatroom').emit('message', result)
-        }
-      })
-      .on('user_list', () => {
-        nIo.to('chatroom').emit('user_list', arrayUserList())
-      })
-      .on(
-        'join',
-        (
-          userInfo: Omit<UserInfo, 'id'>,
-          callback?: (res: { success: boolean }) => void
-        ) => {
-          users.set(socket.id, userInfo)
-          socket.join('chatroom')
+export class ChatController {
+  private io: Namespace
 
-          callback?.({ success: true })
+  get socket(): Socket {
+    if (this._socket) {
+      return this._socket
+    } else {
+      throw new Error('socket not found')
+    }
+  }
 
-          nIo.to('chatroom').emit('user_list', arrayUserList())
-        }
-      )
-      .on('disconnect', () => {
-        users.delete(socket.id)
-        nIo.to('chatroom').emit('user_list', arrayUserList())
-      })
-  })
+  private _socket?: Socket
+
+  private msgModel = new ChatMessageModel()
+
+  constructor(nIo: Namespace) {
+    this.io = nIo
+  }
+
+  connection(socket: Socket): void {
+    this._socket = socket
+  }
+
+  disconnect(): void {
+    users.delete(this.socket.id)
+    this.io.to('chatroom').emit('user_list', arrayUserList())
+  }
+
+  userList(): void {
+    this.io.to('chatroom').emit('user_list', arrayUserList())
+  }
+
+  join(
+    userInfo: Omit<UserInfo, 'id'>,
+    callback?: (res: { success: boolean }) => void
+  ): void {
+    users.set(this.socket.id, userInfo)
+    this.socket.join('chatroom')
+
+    callback?.({ success: true })
+
+    this.io.to('chatroom').emit('user_list', arrayUserList())
+  }
+
+  async getRecords(callback: (res: { messages: MessageDto[] }) => void) {
+    const recordMsgs = await this.msgModel.getAll()
+    callback({ messages: recordMsgs })
+  }
+
+  async message(msg: MessageDto): Promise<void> {
+    const msgInput = messageEntityTranform(this.socket.id, msg)
+    if (msgInput) {
+      const result = await this.msgModel.insert(msgInput)
+      this.io.to('chatroom').emit('message', result)
+    }
+  }
 }
 
 function messageEntityTranform(

@@ -1,3 +1,4 @@
+import { InsertReturn } from 'src/core/types/query'
 import { mariadbPool } from 'src/database/database'
 import { ChatMessage } from 'src/entities/chat'
 
@@ -25,7 +26,7 @@ export class ChatMessageModel {
     const connection = await mariadbPool.connect()
     const insertResult = (await connection.query(
       `INSERT INTO \`test\`.\`chat_message\` (\`owner\`, \`name\`, \`avatar\`, \`content\`) VALUES ('${msg.owner}', '${msg.name}', '${msg.avatar}', '${msg.content}');`
-    )) as { insertId: any; warningStatus: number }
+    )) as InsertReturn
 
     const insertMsg = await this.getById(insertResult.insertId)
 
