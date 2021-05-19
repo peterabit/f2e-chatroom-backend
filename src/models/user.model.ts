@@ -48,7 +48,7 @@ export class UserModel {
     return user[0]
   }
 
-  private async hashPassword(originPassword: string) {
+  async hashPassword(originPassword: string) {
     const saltRounds = 12
     const hash = await bcrypt.hash(originPassword, saltRounds)
 

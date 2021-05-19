@@ -1,4 +1,6 @@
 import { Context } from 'koa'
+import { createResponse } from 'src/core/helper/create-response'
+import { LoginPayload } from 'src/core/types/login-payload'
 import { UserEntity } from 'src/entities/user'
 import { UserService } from './user.service'
 
@@ -21,5 +23,15 @@ export class UserController {
     ctx.body = JSON.stringify(user)
   }
 
-  login(): void {}
+  async login(ctx: Context) {
+    const { account, password } = ctx.request.body
+    const token = await this.userService.login(account, password)
+    ctx.body = createResponse('登入成功', { token })
+  }
+
+  async getUserInfo(ctx: Context): Promise<void> {
+    const payload = ctx.tokenPayload as LoginPayload
+    const userInfo = await this.userService.getUserInfo(payload.userId)
+    ctx.body = createResponse('', userInfo)
+  }
 }

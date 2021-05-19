@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes'
  */
 export class AppError extends Error {
   constructor(
+    public name: string,
     public message: string,
     public status: StatusCodes, // http status code
     public isPublic: boolean,
