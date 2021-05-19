@@ -4,6 +4,7 @@ import { ChatController, MessageDto, UserInfo } from './chat.controller'
 
 export const chatController = (nIo: Namespace) => {
   const chatController = new ChatController(nIo)
+
   nIo.on('connection', (socket: Socket) => {
     chatController.connection(socket)
     socket
