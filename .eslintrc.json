@@ -26,8 +26,8 @@
       {
         "arrays": "only-multiline",
         "objects": "only-multiline",
-        "imports": "never",
-        "exports": "never",
+        "imports": "only-multiline",
+        "exports": "only-multiline",
         "functions": "never"
       }
     ],
