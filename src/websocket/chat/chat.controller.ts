@@ -52,7 +52,6 @@ export class ChatController {
   ): void {
     users.set(this.socket.id, userInfo)
     this.socket.join('chatroom')
-
     callback?.({ success: true })
 
     this.io.to('chatroom').emit('user_list', arrayUserList())

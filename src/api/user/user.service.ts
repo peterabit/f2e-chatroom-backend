@@ -30,7 +30,8 @@ export class UserService {
       throw new LoginRefuseError()
     }
 
-    const isPwdCorrect = compare(password, user.password)
+    const isPwdCorrect = await compare(password, user.password)
+
     if (!isPwdCorrect) {
       throw new LoginRefuseError()
     } else {
